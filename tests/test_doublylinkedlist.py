@@ -1,5 +1,5 @@
 import pytest
-from SimplePdfMerger.doublinklist import *
+from SimplePdfMerger.main_gui import *
 
 def test_empty_list():
     dll = DoublyLinkedList()
