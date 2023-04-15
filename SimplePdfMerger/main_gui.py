@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import filedialog, messagebox
 from screeninfo import get_monitors
-from doublylinkedlist import DoublyLinkedList
+from SimplePdfMerger.doublinklist import *
 from pypdf import PdfWriter
 
 class main_gui:

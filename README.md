@@ -3,4 +3,4 @@
 [![Build Status](https://github.com/Qile0317/SimplePdfMerger/actions/workflows/CI.yml/badge.svg?branch=master)]
 [![MIT license](https://img.shields.io/badge/license-MIT-green.svg)](https://github.com/Qile0317/SimplePdfMerger/LICENSE.md)
 
-A simple pdf appender app written with tkinter. The executable file is included in the main directory
+A simple pdf merging desktop application written with tkinter. The executable file is included in the main directory

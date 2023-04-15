@@ -1,5 +1,5 @@
 import pytest
-from SimplePdfMerger.gui import *
+from SimplePdfMerger.main_gui import *
 from unittest import mock
 import os
 import tkinter as tk
