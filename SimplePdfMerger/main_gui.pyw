@@ -144,7 +144,7 @@ class main_gui:
         self.add_all_buttons()
     
     def create_window_skeleton(self):
-        self.root.title("PDF Appender")
+        self.root.title("Simple PDF file merger")
         #self.root.iconphoto(False, tk.PhotoImage(file = "pdf_merger_logo.png"))
         self.root.configure(bg = self.background_color)
 
@@ -263,7 +263,7 @@ class main_gui:
             defaultextension = ".pdf")
         if output_file:
             try:
-                merge_pdfs(self.pdf_list, output_file)
+                self.merge_pdfs(output_file)
                 tk.messagebox.showinfo(
                     title = "Success",
                     message = "PDFs merged successfully at " + output_file)
