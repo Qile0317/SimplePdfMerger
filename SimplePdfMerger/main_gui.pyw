@@ -1,10 +1,13 @@
 import tkinter as tk
 from tkinter import filedialog, messagebox
 from screeninfo import get_monitors
-#from doublinklist import *
 from pypdf import PdfWriter
+from PIL import Image
+from img2pdf import convert
+import tempfile
+import os
 
-#the doubly linked list code is repeated here because python modules are an absolute nightmare:
+# the doubly linked list with quite some overhead but O(1) insertion
 class DoublyLinkedList:
     class Node:
         def __init__(self, data=None):
@@ -128,9 +131,11 @@ class DoublyLinkedList:
         self.length = 0
         self.node_dict = {}
 
+# main GUI
 class main_gui:
     def __init__(self):
         self.pdf_list = DoublyLinkedList()
+        self.temp_directory = None
         self.background_color = "#212121"
         self.root = tk.Tk()
 
@@ -143,6 +148,12 @@ class main_gui:
         self.create_window_skeleton()
         self.add_all_buttons()
     
+    # temporary directory creator for storing pdfs
+    def create_temp_directory(self):
+        self.temp_directory = tempfile.TemporaryDirectory()
+    def clear_temp_directory(self):
+        self.temp_directory.cleanup()
+
     def create_window_skeleton(self):
         self.root.title("Simple PDF file merger")
         #self.root.iconphoto(False, tk.PhotoImage(file = "pdf_merger_logo.png"))
@@ -152,11 +163,11 @@ class main_gui:
         self.root.geometry("%dx%d" % (main_monitor.width//2, main_monitor.height//2))
 
     def add_all_buttons(self):
-        self.insert_button("Add PDF",
+        self.insert_button("Add file",
             command = self.open_file_explorer)
-        self.insert_button("Merge PDFs",
+        self.insert_button("Merge files",
             command = self.pdf_merger)
-        self.insert_button("Clear PDF list",
+        self.insert_button("Clear list",
             command = self.clear_pdf_list)
 
     def run(self):
@@ -167,9 +178,9 @@ class main_gui:
         file_path = filedialog.askopenfilename()
         if file_path:
             if self.pdf_list._find_node(file_path):
-                messagebox.showerror(title="Error", message = "This PDF is already in the list!")
-            elif file_path[-3:] != "pdf":
-                messagebox.showerror(title="Error", message = "Selected file is not a PDF!")
+                messagebox.showerror(title="Error", message = "This file is already in the list!")
+            elif (file_path[-3:] != "pdf") and (file_path[-3:] != "png") and (file_path[-3:] != "jpg"):
+                messagebox.showerror(title="Error", message = "Selected file is not a PDF or image!")
             else:
                 self.pdf_list.append(file_path)
                 self.update_pdf_list()
@@ -248,15 +259,31 @@ class main_gui:
     def merge_pdfs(self, output_file):
         merger = PdfWriter()
         for pdf in self.pdf_list:
-            merger.append(pdf)
+            if pdf[-3] == "pdf":
+                merger.append(pdf)
+            # assume is png
+            elif self.temp_directory == None:
+                self.create_temp_directory()
+            
+            # convert png to pdf and store in the temporary directory - works
+            curr_img = Image.open(pdf)
+            pdf_bytes = convert(curr_img.filename)
+            temp_pdf_path = os.path.join(self.temp_directory.name, "tempfile.pdf")
+            file = open(temp_pdf_path, "wb")
+            file.write(pdf_bytes)
+            file.close()
+            curr_img.close()            
+            merger.append(temp_pdf_path)
+
         merger.write(output_file)
         merger.close()
+        self.clear_temp_directory()
 
     def pdf_merger(self):
         if self.pdf_list.length == 0:
             messagebox.showerror(
                 title = "Error",
-                message = "Please add some PDFs to the list first!")
+                message = "Please add some files to the list first!")
             return
         output_file = filedialog.asksaveasfilename(
             initialdir = "~/Documents",
@@ -266,7 +293,7 @@ class main_gui:
                 self.merge_pdfs(output_file)
                 tk.messagebox.showinfo(
                     title = "Success",
-                    message = "PDFs merged successfully at " + output_file)
+                    message = "files merged successfully at " + output_file)
             except Exception as e:
                 tk.messagebox.showerror(
                     title = "Error",
@@ -301,6 +328,7 @@ class main_gui:
         self.create_button(text, command)
         self.add_separator_line()
 
+# app runner
 if __name__ == '__main__':
     app = main_gui()
     app.run()
