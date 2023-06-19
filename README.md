@@ -1,5 +1,6 @@
 # <img src="images/pdf_merger_logo.png" width = "17.5%" align = "right" /> SimplePdfMerger
 
+[![Latest Release](https://img.shields.io/github/release/Qile0317/SimplePdfMerger.svg)](https://github.com/Qile0317/SimplePdfMerger/releases/latest)
 [![MIT license](https://img.shields.io/badge/license-MIT-green.svg)](https://github.com/Qile0317/SimplePdfMerger/LICENSE.md)
 
 Worried about online pdf merger tools keeping your persnoal information or being needlessly overcomplicated to use? `SimplePdfMerger` solves this issue: a simple, *darkmode* pdf merging local windows desktop application written in less than 400 lines. The windows executable file `SimplePdfMerger.exe` and can also be found in the latest releases page.
@@ -9,7 +10,8 @@ To run the app, simply download the executable from the latest release page and 
 
 ## Usage
 PDFs, JPEGS, and PNGs can all be merged in any order into a pdf file within the user GUI:
-<img src="images/GUI_example.png" width = "50%" align = "center" />
+
+<img src="images/GUI_example.png" width = "60%" align = "center" />
 
 On the right hand side, the first button "Add file" opens the file explorer when clicked, allowing the user to select a file to add to the end of the file list that can be merged into a pdf on the left hand side. The file can be a `.pdf`, `.png`, or `.jpg` file. The second button "Merge files" will attempt to convert all files in the filelist into pdfs and merge them into an output location chosen by the user in the file explorer. If (un)successful, a popup will be shown informing the user. The third button "Clear list" will simply clear the pdf list.
 
