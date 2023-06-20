@@ -139,24 +139,30 @@ class main_gui:
         self.background_color = "#212121"
         self.root = tk.Tk()
 
+        # pdf list
         self.pdf_list_frame = tk.Frame(self.root, bg = self.background_color)
         self.pdf_list_frame.pack(side = tk.LEFT, fill = tk.BOTH, expand = True)
 
+        # buttons
         self.button_frame = tk.Frame(self.root, bg = self.background_color)
         self.button_frame.pack(side = tk.RIGHT, fill = tk.Y)
-
+        
+        # initializing functions
         self.create_window_skeleton()
         self.add_all_buttons()
     
-    # temporary directory creator for storing pdfs
+    # temporary directory creator and clearer for storing pdfs
     def create_temp_directory(self):
         self.temp_directory = tempfile.TemporaryDirectory()
-    def clear_temp_directory(self):
-        self.temp_directory.cleanup()
 
+    def clear_temp_directory(self):
+        if self.temp_directory is not None:
+            self.temp_directory.cleanup()
+
+    # window creator
     def create_window_skeleton(self):
         self.root.title("Simple PDF file merger")
-        #self.root.iconphoto(False, tk.PhotoImage(file = "pdf_merger_logo.png"))
+        self.root.iconphoto(False, tk.PhotoImage(file = "images/pdf_merger_logo.png"))
         self.root.configure(bg = self.background_color)
 
         main_monitor = get_monitors()[0]
@@ -259,12 +265,13 @@ class main_gui:
     def merge_pdfs(self, output_file):
         merger = PdfWriter()
         for pdf in self.pdf_list:
-            if pdf[-3] == "pdf":
+            if pdf.endswith(".pdf"):
                 merger.append(pdf)
-            # assume is png
+                continue
+            # assume is png/jpg
             elif self.temp_directory == None:
                 self.create_temp_directory()
-            
+
             # convert png to pdf and store in the temporary directory - works
             curr_img = Image.open(pdf)
             pdf_bytes = convert(curr_img.filename)
@@ -272,7 +279,8 @@ class main_gui:
             file = open(temp_pdf_path, "wb")
             file.write(pdf_bytes)
             file.close()
-            curr_img.close()            
+            curr_img.close()
+            pdf_bytes = None # save a teeny bit of memory            
             merger.append(temp_pdf_path)
 
         merger.write(output_file)
