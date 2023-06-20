@@ -162,7 +162,8 @@ class main_gui:
     # window creator
     def create_window_skeleton(self):
         self.root.title("Simple PDF file merger")
-        self.root.iconphoto(False, tk.PhotoImage(file = "images/pdf_merger_logo.png"))
+        # self.root.iconphoto(False, tk.PhotoImage(file = "pdf_merger_logo_base64.txt"))
+        #self.root.wm_iconphoto(False, tk.PhotoImage(file = 'pdf_merger_logo_base64.txt'))
         self.root.configure(bg = self.background_color)
 
         main_monitor = get_monitors()[0]
@@ -340,3 +341,6 @@ class main_gui:
 if __name__ == '__main__':
     app = main_gui()
     app.run()
+
+# pyinstaller input:
+# pyinstaller --onefile -w -F --add-binary "pdf_merger_logo_base64.txt;." SimplePdfMerger/main_gui.pyw

@@ -25,7 +25,9 @@ jobs:
         run: |
           pip install -r requirements.txt
           pip install .
-          pip install pytest # maybe this will work?
       - name: Run pytest
         run: |
           pytest
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v3
+          env: CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
