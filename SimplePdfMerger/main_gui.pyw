@@ -1,11 +1,14 @@
 import tkinter as tk
 from tkinter import filedialog, messagebox
 from screeninfo import get_monitors
-from pypdf import PdfWriter
+from pypdf import PdfWriter, PdfReader
 from PIL import Image
 from img2pdf import convert
 import tempfile
 import os
+import subprocess
+
+#STANDARD_PDF_SIZE = (612, 7 something)
 
 # the doubly linked list with quite some overhead but O(1) insertion
 class DoublyLinkedList:
@@ -131,6 +134,20 @@ class DoublyLinkedList:
         self.length = 0
         self.node_dict = {}
 
+# get dimensions of a file
+def get_dims(file):
+    if file.endswith(".pdf"):
+        reader = PdfReader(file)
+        box = reader.pages[0].mediabox
+        return box.width, box.height
+    if file.endswith(".png", ".jpg"):
+        img = Image.open(file)
+        return img.size
+    
+# smart image resizer to fit the required
+def resize_img(img, nx = 60): # 612
+    return img.resize((int(nx), int(img.size[1]*nx/img.size[0])))
+
 # main GUI
 class main_gui:
     def __init__(self):
@@ -170,7 +187,7 @@ class main_gui:
         self.root.geometry("%dx%d" % (main_monitor.width//2, main_monitor.height//2))
 
     def add_all_buttons(self):
-        self.insert_button("Add file",
+        self.insert_button("Add file(s)",
             command = self.open_file_explorer)
         self.insert_button("Merge files",
             command = self.pdf_merger)
@@ -180,17 +197,27 @@ class main_gui:
     def run(self):
         self.root.mainloop()
     
-    # functions for the buttons - i couldnt make it in another script :/
+    # functions for the buttons - i couldnt figure out how to put it in another script without pyinstaller dying :/
+    # file adder
     def open_file_explorer(self):
-        file_path = filedialog.askopenfilename()
-        if file_path:
-            if self.pdf_list._find_node(file_path):
-                messagebox.showerror(title="Error", message = "This file is already in the list!")
-            elif (file_path[-3:] != "pdf") and (file_path[-3:] != "png") and (file_path[-3:] != "jpg"):
-                messagebox.showerror(title="Error", message = "Selected file is not a PDF or image!")
-            else:
-                self.pdf_list.append(file_path)
-                self.update_pdf_list()
+        files = filedialog.askopenfilenames(title = "choose one or more files")
+
+        # scan through the files to check they are all valid
+        if not files:
+            messagebox.showerror(title="Error", message = "No files selected")
+            return
+        for file in files:
+            if self.pdf_list._find_node(file):
+                messagebox.showerror(title="Error", message = "The file" + file + "is already in the list!")
+                return
+            if not file.endswith((".pdf", ".png", ".jpg")):
+                messagebox.showerror(title="Error", message = "The file" + file + "is not a PDF or image!")
+                return
+            
+            # its probably less frustrating if the user is given the option to skip this :P
+
+        self.pdf_list.append_vector(files)
+        self.update_pdf_list() 
 
     # Remove the selected PDF from the list
     def remove_pdf(self, pdf_node):
@@ -263,18 +290,24 @@ class main_gui:
         self.pdf_list.clear()
         self.update_pdf_list()
 
+    # the actual pdf merger function
     def merge_pdfs(self, output_file):
         merger = PdfWriter()
         for pdf in self.pdf_list:
             if pdf.endswith(".pdf"):
                 merger.append(pdf)
                 continue
-            # assume is png/jpg
-            elif self.temp_directory == None:
+
+            elif not pdf.endswith((".png", ".jpg")):
+                continue # shouldnt even be possible
+            if self.temp_directory == None:
                 self.create_temp_directory()
 
-            # convert png to pdf and store in the temporary directory - works
+            # convert png to pdf and store in the temporary directory
             curr_img = Image.open(pdf)
+            #if curr_img.size != (612, 792):
+            #    resize_img(curr_img)
+
             pdf_bytes = convert(curr_img.filename)
             temp_pdf_path = os.path.join(self.temp_directory.name, "tempfile.pdf")
             file = open(temp_pdf_path, "wb")
@@ -295,7 +328,7 @@ class main_gui:
                 message = "Please add some files to the list first!")
             return
         output_file = filedialog.asksaveasfilename(
-            initialdir = "~/Documents",
+            #initialdir = "~/Documents",
             defaultextension = ".pdf")
         if output_file:
             try:
@@ -342,5 +375,5 @@ if __name__ == '__main__':
     app = main_gui()
     app.run()
 
-# pyinstaller input:
+# to build on windows terminal:
 # pyinstaller --onefile -w -F --add-binary "pdf_merger_logo_base64.txt;." SimplePdfMerger/main_gui.pyw
