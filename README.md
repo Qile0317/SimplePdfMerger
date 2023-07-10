@@ -3,10 +3,17 @@
 [![Latest Release](https://img.shields.io/github/release/Qile0317/SimplePdfMerger.svg)](https://github.com/Qile0317/SimplePdfMerger/releases/latest)
 [![MIT license](https://img.shields.io/badge/license-MIT-green.svg)](https://github.com/Qile0317/SimplePdfMerger/LICENSE.md)
 
-Worried about online pdf merger tools keeping your persnoal information or being needlessly overcomplicated to use? `SimplePdfMerger` solves this issue: a simple, *darkmode* pdf merging local windows desktop application written in less than 400 lines. The windows executable file `SimplePdfMerger.exe` and can also be found in the latest releases page.
+Worried about online pdf merger tools keeping your persnoal information or being needlessly overcomplicated to use? `SimplePdfMerger` solves this issue: a simple, opensource, *darkmode* pdf merging windows desktop application written in less than 400 lines. The windows executable file `SimplePdfMerger.exe` and can also be found in the latest releases page.
 
 ## Installation
-To run the app, simply download the executable from the latest release page and click on it when downloaded. The executable works on windows and the code hasn't been tested on other systems yet.
+To run the app, simply download the executable `SimplePdfMerger.exe` from the latest release page (https://github.com/Qile0317/SimplePdfMerger/releases/download/v0.2.1/SimplePdfMerger.exe) and click on it when downloaded. The executable works on windows and the code hasn't been tested on other systems yet.
+
+If one is worried about the executable being malicious, the app can also be compiled from scratch by cloning the repository and built with pyinstaller from the command line with the following code:
+```
+git clone https://github.com/Qile0317/SimplePdfMerger.git
+cd SimplePdfMerger
+pyinstaller --onefile -w -F main_gui.pyw
+```
 
 ## Usage
 PDFs, JPEGS, and PNGs can all be merged in any order into a pdf file within the following user GUI:
